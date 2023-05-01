@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+
+  test_db:
+    image: postgres:13.3
+    environment:
+      POSTGRES_DB: "test_postgres"
+      POSTGRES_USER: "test_postgres"
+      POSTGRES_PASSWORD: "test_postgres"
+    ports:
+      - "9999:5432"
+
+  db:
+    image: postgres:13.3
+    environment:
+      POSTGRES_DB: "postgres2"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+      - "5432:5432"
+    volumes:
+      - /var/lib/postgresql/data
