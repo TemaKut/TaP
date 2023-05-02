@@ -34,7 +34,7 @@ async def get_token(
 
 
 @users_router.post(
-    '/create',
+    '/',
     name='create_user',
     status_code=status.HTTP_201_CREATED,
     response_model=UserGetSchema,
@@ -54,19 +54,6 @@ async def create_user(
 
 
 @users_router.get(
-    '/me',
-    response_model=UserGetSchema,
-    responses={
-        401: {'model': br.AuthenticationRequired}
-    }
-)
-async def get_info_about_me(user: User = Depends(get_current_user)):
-    """ Вернуть информацию о пользователе. """
-
-    return user
-
-
-@users_router.get(
     '/',
     name='get_list_of_users',
     response_model=list[UserGetSchema],
@@ -76,6 +63,20 @@ async def get_list_of_users(crud: UsersCRUD = Depends()):
     users = await crud.get_list_of_users()
 
     return users
+
+
+@users_router.get(
+    '/me',
+    name='get_info_about_me',
+    response_model=UserGetSchema,
+    responses={
+        401: {'model': br.AuthenticationRequired}
+    }
+)
+async def get_info_about_me(user: User = Depends(get_current_user)):
+    """ Вернуть информацию о пользователе. """
+
+    return user
 
 
 @users_router.get(

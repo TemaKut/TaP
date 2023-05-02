@@ -29,15 +29,15 @@ class UsersCRUD():
         query = select(User)
         result = await self.session.execute(query)
 
-        return result.scalars().all()
+        return result.scalars().unique().all()
 
     async def get_user_from_db(self, username: str) -> User:
         """ Получить пользователя из БД. """
-        query = select(User).where(User.username == username)
+        query = select(User).filter(User.username == username)
 
         try:
             result = await self.session.execute(query)
-            result = result.scalars().all()
+            result = result.scalars().unique().all()
 
         except Exception:
             log.error('Incorrect username')
@@ -70,6 +70,7 @@ class UsersCRUD():
         try:
             self.session.add(user)
             await self.session.commit()
+            await self.session.refresh(user)
 
         except Exception:
             log.critical('Error with add user in DB')
@@ -87,14 +88,12 @@ class UsersCRUD():
         user.verify_password(data.password)
 
         # Формирование данных токена
-        user_data = UserGetSchema.from_orm(user).dict()
         now = datetime.utcnow()
 
         token_data = {
             "iat": now,
-            "exp": now + timedelta(seconds=settings.JWT_EXPIRE_SEC),
+            "exp": now + timedelta(minutes=settings.JWT_EXPIRE_MIN),
             'user_id': user.id,
-            'user': user_data,
         }
 
         # Кодирование данных в токен
@@ -111,6 +110,6 @@ class UsersCRUD():
         query = select(User).where(User.username == username)
 
         result = await self.session.execute(query)
-        result = result.fetchall()
+        result = result.scalars().unique().all()
 
         return True if len(result) > 0 else False

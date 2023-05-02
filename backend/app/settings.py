@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     DB_URL: str = os.getenv('DB_URL')
 
     JWT_ALGORITHM: str = os.getenv('JWT_ALGORITHM')
-    JWT_EXPIRE_SEC: int = os.getenv('JWT_EXPIRE_SEC')
+    JWT_EXPIRE_MIN: int = os.getenv('JWT_EXPIRE_MIN')
     JWT_SECRET: str = os.getenv('JWT_SECRET')
 
     TEST_DB_URL = os.getenv('TEST_DB_URL')

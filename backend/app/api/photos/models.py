@@ -1,8 +1,8 @@
 import sqlalchemy as sa
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 
 from app.database.base import Base
-from app.api.users.models import User
 
 
 class Photo(Base):
@@ -21,7 +21,7 @@ class Photo(Base):
     )
     owner_id = sa.Column(
         sa.Integer,
-        sa.ForeignKey(User.id),
+        sa.ForeignKey('users.id'),
         nullable=False,
         comment='Владелец фотограции. (User)'
     )
@@ -36,7 +36,12 @@ class Photo(Base):
         server_default=func.now(),
     )
 
+    owner = relationship(
+        'User',
+        backref='photos',
+    )
+
     def __repr__(self):
         """ Строчное представление объекта. """
 
-        return f'{self.__class__.__name__}<{self.id=}, {self.image_url=}>'
+        return f'{self.__class__.__name__}<{self.id=}, {self.image_uri=}>'

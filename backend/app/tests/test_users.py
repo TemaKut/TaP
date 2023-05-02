@@ -5,7 +5,7 @@ from httpx import AsyncClient
 from fastapi import status
 
 from app.main import app
-from .utils import create_user, check_user_in_db
+from .utils import create_user, check_user_in_db, get_auth_header_for_user
 
 
 async def test_user_create_in_db(
@@ -114,3 +114,26 @@ async def test_get_user_by_username(
     response = await client.get(uri)
 
     assert response.status_code == status.HTTP_200_OK
+
+
+async def test_get_info_about_me(
+    session: AsyncSession,
+    client: AsyncClient,
+):
+    """ Проверка эндпоинта с информацией о пользователе сделавшим запрос. """
+    username = 'Artem_test'
+    password = 'password'
+
+    # Создадим пользователя с тем же username
+    await create_user(session, username, password)
+    assert await check_user_in_db(username, session)
+
+    # Получить токен пользователя
+    auth_header = await get_auth_header_for_user(client, username, password)
+
+    uri = app.url_path_for('get_info_about_me')
+    response = await client.get(uri, headers=auth_header)
+    assert response.status_code == status.HTTP_200_OK
+    response_data = json.loads(response.text)
+
+    assert response_data.get('username') == username

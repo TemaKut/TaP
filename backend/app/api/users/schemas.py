@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from app.api.photos.schemas import PhotoGetSchema
+
 
 class UserBaseSchema(BaseModel):
     """ Базовая схема пользователя с общедоступными полями. """
@@ -17,10 +19,15 @@ class UserGetSchema(UserBaseSchema):
     """ Схема полей для получения данных пользователя в response. """
 
     id: int
+    photos: list[PhotoGetSchema] = []
     is_active: bool
 
     class Config:
         orm_mode = True
+
+
+# Для предотвращения цикличного иморта..
+UserGetSchema_ = UserGetSchema
 
 
 class TokenCreateSchema(BaseModel):
