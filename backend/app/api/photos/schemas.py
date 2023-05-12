@@ -6,7 +6,6 @@ from pydantic import BaseModel
 class PhotoCreate(BaseModel):
     """ Схема данных при создании фотографии. """
 
-    image_uri: str
     description: str = None
 
 
